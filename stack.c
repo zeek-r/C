@@ -1,3 +1,4 @@
+/** C Program for basic model of stack operations **/
 #include<stdio.h>
 #include<stdlib.h>
 
