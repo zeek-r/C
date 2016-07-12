@@ -1,3 +1,4 @@
+/** Implementation of Vigenere Cipher using C **/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
