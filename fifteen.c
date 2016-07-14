@@ -17,10 +17,10 @@
  
 #define _XOPEN_SOURCE 500
 
+#include <cs50.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdbool.h>
 
 // constants
 #define DIM_MIN 3
@@ -40,7 +40,7 @@ void draw(void);
 bool move(int tile);
 bool won(void);
 
-int main(int argc, char* argv[])
+int main(int argc, string argv[])
 {
     // ensure proper usage
     if (argc != 2)
@@ -104,8 +104,7 @@ int main(int argc, char* argv[])
 
         // prompt for move
         printf("Tile to move: ");
-        int tile;
-        scanf("%d", &tile);
+        int tile = GetInt();
         
         // quit if user inputs 0 (for testing)
         if (tile == 0)
@@ -160,25 +159,54 @@ void greet(void)
  */
 void init(void)
 {
-    int tmp = d*d;
-    for (int i = 0; i < d; i++)
+    if (d % 2 != 0)
     {
-        for (int j = 0; j < d; j++)
+        int tmp = d*d;
+        for (int i = 0; i < d; i++)
         {
-            if(tmp == 1)
+            for (int j = 0; j < d; j++)
             {
-                printf("_");
-                break;   
-            }
-            else
-            {
-                printf("%d\t", tmp-1);
-                tmp--;
+                if(tmp == 1)
+                {
+                    tmp--;
+                    i = d, j = d;
+                    break;   
+                }
+                else
+                {
+                    board[i][j] = tmp-1;
+                    tmp--;
+                }
             }
         }
-        printf("\n");
     }
-    usleep(5000000);
+    else
+    {
+        int tmp = d*d;
+        for (int i = 0; i < d; i++)
+        {
+            for (int j = 0; j < d; j++)
+            {
+                if (tmp + 1 == 4 )
+                {
+                    board[i][j] = tmp-2; 
+                    tmp--;
+                }
+                else if( tmp == 2)
+                {
+                    board[i][j] = tmp;
+                    i = d, j = d;
+                    break;
+                }
+                else
+                {
+                    board[i][j] = tmp-1;
+                    tmp--;
+                }
+            }
+            printf("\n");
+        }
+    }
 }
 
 /**
@@ -187,6 +215,21 @@ void init(void)
 void draw(void)
 {
     // TODO
+    for (int i = 0; i < d; i++)
+    {
+        for (int j = 0; j < d; j++)
+        {
+            if(board[i][j] == 0)
+            {
+                printf("_\t");
+            }
+            else
+            {
+                printf("%d\t", board[i][j]);
+            }
+        }
+        printf("\n");
+    }
 }
 
 /**
@@ -195,8 +238,50 @@ void draw(void)
  */
 bool move(int tile)
 {
-    // TODO
-    return false;
+    for (int i=0; i < d; i++)
+    {
+        for (int j = 0; j < d; j++)
+        {
+            if(board[i][j] == tile)
+            {
+                if(((board[i][j+1] == 0) && (i < d && (j+1) < d)) || ((board[i][j-1] == 0) && ((j-1) >= 0 && (j-1) < d)))
+                {      
+                    if((board[i][j+1] == 0) && (i < d && (j+1) < d))
+                    {
+                        board[i][j+1] = tile;
+                        board[i][j] = 0;
+                        return true;
+                    }
+                    
+                    if ((board[i][j-1] == 0) && (i < d && (j-1) < d))
+                    {
+                        board[i][j-1] = tile;
+                        board[i][j] = 0;
+                        return true;
+                    }
+                }
+         
+                else if(((board[i+1][j] == 0) && ((i+1) < d && j < d)) || ((board[i-1][j] == 0) && ((i-1) < d && (i-1) >= 0)))
+                {
+                    if((board[i+1][j] == 0) && ((i+1) < d && j < d))
+                    {
+                        board[i+1][j] = tile;
+                        board[i][j] = 0;
+                        return true;
+                    }
+                    if((board[i-1][j] == 0) && ((i-1) < d && j < d))
+                    {
+                        board[i-1][j] = tile;
+                        board[i][j] = 0;
+                        return true;
+                    }
+                }
+                else
+                return false;
+            }
+        }    
+    }
+return false;
 }
 
 /**
@@ -205,6 +290,22 @@ bool move(int tile)
  */
 bool won(void)
 {
-    // TODO
-    return false;
+    int temp = 1;
+    for(int i = 0; i < d; i++)
+    {
+        for (int j = 0; j < d; j++)
+        {
+            if( board[i][j] == temp)
+            {
+                if(board[i][j+1] == 0 && board[d-1][d-2] == board[i][j])
+                {
+                    return true;
+                }    
+            temp++;
+            }   
+            else
+            return false;
+        }
+    }
+return false;
 }
